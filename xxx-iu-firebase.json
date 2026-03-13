@@ -1,0 +1,108 @@
+{
+  "firebase": {
+    "database": {
+      "rules": {
+        "users": {
+          "$uid": {
+            ".read": "auth.uid === $uid",
+            ".write": "auth.uid === $uid",
+            "nick": { ".validate": "newData.isString() && newData.val().length > 0" },
+            "publicKey": { ".validate": "newData.hasChildren(['x', 'y', 'crv', 'kty'])" },
+            "status": { ".validate": "newData.val() === 'online' || newData.val() === 'offline'" },
+            "points": { ".validate": "newData.isNumber()" },
+            "lastSeen": { ".validate": "newData.isNumber()" }
+          }
+        },
+        "rooms": {
+          "$roomId": {
+            "metadata": {
+              ".read": "auth.uid != null",
+              ".write": "auth.uid != null",
+              "criadorUid": { ".validate": "newData.isString()" },
+              "criadorNick": { ".validate": "newData.isString()" },
+              "personagemNick": { ".validate": "newData.isString()" },
+              "personagemUid": { ".validate": "newData.isString()" },
+              "status": { ".validate": "newData.val() === 'aguardando' || newData.val() === 'conectado'" },
+              "criado": { ".validate": "newData.isNumber()" },
+              "currentMode": { ".validate": "newData.isString()" },
+              "lastModeChange": { ".validate": "newData.isNumber()" }
+            },
+            "messages": {
+              ".read": "auth.uid != null",
+              ".write": "auth.uid != null",
+              "$msgId": {
+                "sender": { ".validate": "newData.isString()" },
+                "timestamp": { ".validate": "newData.isNumber()" },
+                "iv": { ".validate": "newData.isString()" },
+                "cipher": { ".validate": "newData.isString()" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "storage": {
+      "rules": [
+        {
+          "match": "/{allPaths=**}",
+          "allow": "if false;"
+        },
+        {
+          "match": "/users/{uid}/{fileName}",
+          "allow": "if request.auth.uid == uid;"
+        },
+        {
+          "match": "/rooms/{roomId}/{fileName}",
+          "allow": "if request.auth.uid != null;"
+        }
+      ]
+    }
+  },
+  "pwa": {
+    "manifest": {
+      "name": "XXXIU! - Chat Secreto",
+      "short_name": "XXXIU!",
+      "description": "Chat ultra-secreto com modos história e fofoca IA",
+      "start_url": "/",
+      "display": "standalone",
+      "background_color": "#1C1C1C",
+      "theme_color": "#7B4B9E",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
+  },
+  "modos": {
+    "base": ["ROMANCE", "NOIR", "FANTASIA"],
+    "dinamicos": ["GÓTICO", "COMÉDIA", "ERÓTICO", "FICÇÃO CIENTÍFICA", "DRAMA"],
+    "todos": ["ROMANCE", "NOIR", "FANTASIA", "GÓTICO", "COMÉDIA", "ERÓTICO", "FICÇÃO CIENTÍFICA", "DRAMA"]
+  },
+  "gamificacao": {
+    "pontos": {
+      "msg_texto": 1,
+      "msg_img": 3,
+      "msg_video": 5,
+      "conquistas": {
+        "5_msg_seguidas": 10,
+        "3_gifs_roxos": 20,
+        "final_epico": 50
+      }
+    },
+    "barra_progresso_max": 100
+  },
+  "config": {
+    "versao": "5.0",
+    "autor": "Base44",
+    "firebase_hosting": "xxx-iu.web.app",
+    "repositorio": "https://github.com/seuuser/xxx-iu"
+  }
+}
